@@ -141,7 +141,13 @@
                             <td><?php echo number_format($producto["precio"], 2, ',', '.') . '€'; ?></td>
                             <td><?php echo number_format($total, 2, ',', '.') . '€'; ?></td>
                         </tr>
-                    <?php } ?>
+                    <?php } 
+                        // Se añade el cálculo del IVA sobre el total con descuento. 
+                        // agrega un 15% de IVA (Impuesto sobre el Valor Añadido) al total 
+                        // con descuento, usando operaciones aritméticas.
+                        
+                        $totalConIva = $totalCompra+$totalCompra*0.15;
+                    ?>
                     <tr>
                         <td></td>
                         <td></td>
@@ -153,6 +159,12 @@
                         <td></td>
                         <td>Total con descuento</td>
                         <td><?php echo number_format($totalCompra, 2, ',', '.') . '€'; ?></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>Total con iva (15%)</td>
+                        <td><?php echo number_format($totalConIva, 2, ',', '.') . '€'; ?></td>
                     </tr>
                     <tr>
                         <td></td>
@@ -169,6 +181,7 @@
                 </table>
 
                 <?php 
+
                 // Lógica para regalos
                 if ($cantidadTotal >= LIMITE_UNIDADES_REGALO || $totalCompra > LIMITE_MONTO_REGALO) {
                     echo "<script>alert('¡Felicidades! Has recibido artículos gratis de cada producto.');</script>";
