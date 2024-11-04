@@ -160,6 +160,12 @@
                         <td><?php echo ($totalCompra > LIMITE_COMPRA_GRANDE) ? "Compra grande" : "Compra normal"; ?></td>
                         <td></td>
                     </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>Par</td>
+                        <td><?php echo ($cantidadTotal % 2 === 0) ? "Sí" : "No"; ?></td>
+                    </tr>
                 </table>
 
                 <?php 
@@ -176,11 +182,9 @@
                     $nombresProductos = array_map(function($producto) use ($cantidadExtraTotal) {
                         return $producto["nombre"] . " (+" . $cantidadExtraTotal . ")";
                     }, $productos);
-                    //Añadimos la función implode para implementar las comas entre los productos gratuitos añadidos.
                     echo "<p>Productos gratuitos añadidos: " . implode(", ", $nombresProductos) . ".</p>";
                 }
                 ?>
-
             </div>
         <?php } ?>
     </div>
