@@ -91,6 +91,7 @@
         define('LIMITE_COMPRA_GRANDE', 100);
         define('LIMITE_UNIDADES_REGALO', 30);
         define('LIMITE_MONTO_REGALO', 200);
+        define('LIMITE_CANTIDAD_ADICIONAL', 40);
 
         // Manejo del formulario
         if (isset($_POST["producto1"])) {
@@ -116,6 +117,8 @@
             $descuentoTotal = 0;
             $cantidadTotal = 0;
 
+            $cantidadProductos = 0;
+
             ?>
             <div id="results" class="results">
                 <h2>Resultados</h2>
@@ -134,6 +137,7 @@
                         $totalCompra += $totalConDescuento;
                         $descuentoTotal += $descuento;
                         $cantidadTotal += $producto["cantidad"];
+                        $cantidadProductos+=$producto["cantidad"];
                         ?>
                         <tr>
                             <td><?php echo $producto["nombre"]; ?></td>
@@ -141,7 +145,12 @@
                             <td><?php echo number_format($producto["precio"], 2, ',', '.') . '€'; ?></td>
                             <td><?php echo number_format($total, 2, ',', '.') . '€'; ?></td>
                         </tr>
-                    <?php } 
+                    <?php }
+                        // Si el número total 
+                        // de productos supera 40 unidades (LIMITE_CANTIDAD_ADICIONAL), 
+                        // se aplica un descuento adicional del 5%.
+                        $totalConDescuentoCantidad = $totalCompra-$totalCompra*0.05;
+
                         // Se añade el cálculo del IVA sobre el total con descuento. 
                         // agrega un 15% de IVA (Impuesto sobre el Valor Añadido) al total 
                         // con descuento, usando operaciones aritméticas.
@@ -165,6 +174,12 @@
                         <td></td>
                         <td>Total con iva (15%)</td>
                         <td><?php echo number_format($totalConIva, 2, ',', '.') . '€'; ?></td>
+                    </tr>
+                    <tr>
+                        <td>Cantidad total</td>
+                        <td><?php echo $cantidadProductos;?></td>
+                        <td><?php echo $cantidadProductos>LIMITE_CANTIDAD_ADICIONAL?"Descuento por cantidad: 5%":"Sin descuento por cantidad";?></td>
+                        <td><?php echo $cantidadProductos>LIMITE_CANTIDAD_ADICIONAL?number_format($totalConDescuentoCantidad, 2, ',', '.') . '€':''; ?></td>
                     </tr>
                     <tr>
                         <td></td>
