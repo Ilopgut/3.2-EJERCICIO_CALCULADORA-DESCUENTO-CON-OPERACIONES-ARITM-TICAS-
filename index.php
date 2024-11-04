@@ -89,6 +89,8 @@
         define('DESCUENTO_PEQUENO', 0.1);
         define('LIMITE_DESCUENTO', 50);
         define('LIMITE_COMPRA_GRANDE', 100);
+        define('LIMITE_UNIDADES_REGALO', 30);
+        define('LIMITE_MONTO_REGALO', 200);
 
         // Manejo del formulario
         if (isset($_POST["producto1"])) {
@@ -109,9 +111,11 @@
                     "precio" => (float)$_POST["precio3"]
                 ]
             ];
-        
+
             $totalCompra = 0;
             $descuentoTotal = 0;
+            $cantidadTotal = 0;
+
             ?>
             <div id="results" class="results">
                 <h2>Resultados</h2>
@@ -126,9 +130,10 @@
                         $total = $producto["precio"] * $producto["cantidad"];
                         $descuento = ($total > LIMITE_DESCUENTO) ? $total * DESCUENTO_PEQUENO : 0;
                         $totalConDescuento = $total - $descuento;
-        
+
                         $totalCompra += $totalConDescuento;
                         $descuentoTotal += $descuento;
+                        $cantidadTotal += $producto["cantidad"];
                         ?>
                         <tr>
                             <td><?php echo $producto["nombre"]; ?></td>
@@ -156,6 +161,26 @@
                         <td></td>
                     </tr>
                 </table>
+
+                <?php 
+                // Lógica para regalos
+                if ($cantidadTotal >= LIMITE_UNIDADES_REGALO || $totalCompra > LIMITE_MONTO_REGALO) {
+                    echo "<script>alert('¡Felicidades! Has recibido artículos gratis de cada producto.');</script>";
+                    
+                    // Calcular cantidad de artículos extra
+                    $cantidadExtraPorUnidades = floor($cantidadTotal / LIMITE_UNIDADES_REGALO);
+                    $cantidadExtraPorMonto = floor($totalCompra / LIMITE_MONTO_REGALO);
+                    $cantidadExtraTotal = max($cantidadExtraPorUnidades, $cantidadExtraPorMonto);
+
+                    // Crear mensaje para artículos gratuitos
+                    $nombresProductos = array_map(function($producto) use ($cantidadExtraTotal) {
+                        return $producto["nombre"] . " (+" . $cantidadExtraTotal . ")";
+                    }, $productos);
+                    //Añadimos la función implode para implementar las comas entre los productos gratuitos añadidos.
+                    echo "<p>Productos gratuitos añadidos: " . implode(", ", $nombresProductos) . ".</p>";
+                }
+                ?>
+
             </div>
         <?php } ?>
     </div>
