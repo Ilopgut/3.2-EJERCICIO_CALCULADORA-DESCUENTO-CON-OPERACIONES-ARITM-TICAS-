@@ -228,6 +228,7 @@
                     $nombresProductos = array_map(function($producto) use ($cantidadExtraTotal) {
                         return $producto["nombre"] . " (+" . $cantidadExtraTotal . ")";
                     }, $productos);
+                    //Añado comentario desde github de la funcion implode para dar formato al texto
                     echo "<p>Productos gratuitos añadidos: ".nl2br("\n") . implode(nl2br("\n"), $nombresProductos) . ".</p>";
                 }
                 ?>
