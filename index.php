@@ -118,6 +118,10 @@
             $cantidadTotal = 0;
             $cantidadProductos = 0;
 
+            
+            $sumaPreciosUnidad = 0;
+            $cantidadProductosConPrecio = 0;
+
             ?>
             <div id="results" class="results">
                 <h2>Resultados</h2>
@@ -138,6 +142,12 @@
                         $descuentoTotal += $descuento;
                         $cantidadTotal += $producto["cantidad"];
                         $cantidadProductos += $producto["cantidad"];
+
+                        
+                        if ($producto["precio"] > 0) {  // Solo consideramos productos con precio mayor a 0
+                            $sumaPreciosUnidad += $producto["precio"];
+                            $cantidadProductosConPrecio++;
+                        }
                         ?>
                         <tr>
                             <td><?php echo $producto["nombre"]; ?></td>
@@ -153,6 +163,13 @@
 
                     // Cálculo del IVA (si el totalConDescuentoCantidad es mayor a 0)
                     $totalConIva = ($totalConDescuentoCantidad > 0) ? $totalConDescuentoCantidad * 1.15 : $totalCompra;
+
+                    
+                    // Calculamos el promedio de precio por unidad (evitando división por cero)
+                    $promedioPrecioUnidad = $cantidadProductosConPrecio > 0 ? 
+                    $sumaPreciosUnidad / $cantidadProductosConPrecio : 0;
+
+
                     ?>
                     <tr>
                         <td></td>
@@ -189,6 +206,10 @@
                         <td></td>
                         <td>Par</td>
                         <td><?php echo ($cantidadTotal % 2 === 0) ? "Sí" : "No"; ?></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">Precio promedio por unidad</td>
+                        <td><?php echo number_format($promedioPrecioUnidad, 2, ',', '.') . '€'; ?></td>
                     </tr>
                 </table>
 
