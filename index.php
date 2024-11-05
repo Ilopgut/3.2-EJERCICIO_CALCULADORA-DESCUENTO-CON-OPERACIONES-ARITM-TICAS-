@@ -116,7 +116,6 @@
             $totalCompra = 0;
             $descuentoTotal = 0;
             $cantidadTotal = 0;
-
             $cantidadProductos = 0;
 
             ?>
@@ -130,14 +129,15 @@
                         <td>Total</td>
                     </tr>
                     <?php foreach ($productos as $producto) {
+                        // Usamos operadores lógicos para aplicar el descuento si se cumplen ambas condiciones.
                         $total = $producto["precio"] * $producto["cantidad"];
-                        $descuento = ($total > LIMITE_DESCUENTO) ? $total * DESCUENTO_PEQUENO : 0;
+                        $descuento = ($total > LIMITE_DESCUENTO && $producto["cantidad"] > 1) ? $total * DESCUENTO_PEQUENO : 0;
                         $totalConDescuento = $total - $descuento;
 
                         $totalCompra += $totalConDescuento;
                         $descuentoTotal += $descuento;
                         $cantidadTotal += $producto["cantidad"];
-                        $cantidadProductos+=$producto["cantidad"];
+                        $cantidadProductos += $producto["cantidad"];
                         ?>
                         <tr>
                             <td><?php echo $producto["nombre"]; ?></td>
@@ -146,16 +146,13 @@
                             <td><?php echo number_format($total, 2, ',', '.') . '€'; ?></td>
                         </tr>
                     <?php }
-                        // Si el número total 
-                        // de productos supera 40 unidades (LIMITE_CANTIDAD_ADICIONAL), 
-                        // se aplica un descuento adicional del 5%.
-                        $totalConDescuentoCantidad = $totalCompra-$totalCompra*0.05;
 
-                        // Se añade el cálculo del IVA sobre el total con descuento. 
-                        // agrega un 15% de IVA (Impuesto sobre el Valor Añadido) al total 
-                        // con descuento, usando operaciones aritméticas.
-                        
-                        $totalConIva = $totalCompra+$totalCompra*0.15;
+                    // Aplicamos un 5% adicional si se cumple alguna de las dos condiciones
+                    $totalConDescuentoCantidad = ($cantidadProductos > LIMITE_CANTIDAD_ADICIONAL || $totalCompra > LIMITE_MONTO_REGALO)
+                        ? $totalCompra * 0.95 : $totalCompra;
+
+                    // Cálculo del IVA (si el totalConDescuentoCantidad es mayor a 0)
+                    $totalConIva = ($totalConDescuentoCantidad > 0) ? $totalConDescuentoCantidad * 1.15 : $totalCompra;
                     ?>
                     <tr>
                         <td></td>
@@ -172,14 +169,14 @@
                     <tr>
                         <td></td>
                         <td></td>
-                        <td>Total con iva (15%)</td>
+                        <td>Total con IVA (15%)</td>
                         <td><?php echo number_format($totalConIva, 2, ',', '.') . '€'; ?></td>
                     </tr>
                     <tr>
                         <td>Cantidad total</td>
                         <td><?php echo $cantidadProductos;?></td>
-                        <td><?php echo $cantidadProductos>LIMITE_CANTIDAD_ADICIONAL?"Descuento por cantidad: 5%":"Sin descuento por cantidad";?></td>
-                        <td><?php echo $cantidadProductos>LIMITE_CANTIDAD_ADICIONAL?number_format($totalConDescuentoCantidad, 2, ',', '.') . '€':''; ?></td>
+                        <td><?php echo ($cantidadProductos > LIMITE_CANTIDAD_ADICIONAL) ? "Descuento por cantidad: 5%" : "Sin descuento por cantidad";?></td>
+                        <td><?php echo ($cantidadProductos > LIMITE_CANTIDAD_ADICIONAL) ? number_format($totalConDescuentoCantidad, 2, ',', '.') . '€' : ''; ?></td>
                     </tr>
                     <tr>
                         <td></td>
@@ -197,13 +194,13 @@
 
                 <?php 
 
-                // Lógica para regalos
+                // Lógica para regalos (usando OR y AND)
                 if ($cantidadTotal >= LIMITE_UNIDADES_REGALO || $totalCompra > LIMITE_MONTO_REGALO) {
                     echo "<script>alert('¡Felicidades! Has recibido artículos gratis de cada producto.');</script>";
                     
                     // Calcular cantidad de artículos extra
-                    $cantidadExtraPorUnidades = floor($cantidadTotal / LIMITE_UNIDADES_REGALO);
-                    $cantidadExtraPorMonto = floor($totalCompra / LIMITE_MONTO_REGALO);
+                    $cantidadExtraPorUnidades = ($cantidadTotal >= LIMITE_UNIDADES_REGALO) ? floor($cantidadTotal / LIMITE_UNIDADES_REGALO) : 0;
+                    $cantidadExtraPorMonto = ($totalCompra > LIMITE_MONTO_REGALO) ? floor($totalCompra / LIMITE_MONTO_REGALO) : 0;
                     $cantidadExtraTotal = max($cantidadExtraPorUnidades, $cantidadExtraPorMonto);
 
                     // Crear mensaje para artículos gratuitos
