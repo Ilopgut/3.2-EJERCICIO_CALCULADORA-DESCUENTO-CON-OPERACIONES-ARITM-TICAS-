@@ -228,6 +228,7 @@
                     $nombresProductos = array_map(function($producto) use ($cantidadExtraTotal) {
                         return $producto["nombre"] . " (+" . $cantidadExtraTotal . ")";
                     }, $productos);
+                    //Uso la función implode para concatenar los nombres de los productos
                     echo "<p>Productos gratuitos añadidos: " . implode(", ", $nombresProductos) . ".</p>";
                 }
                 ?>
